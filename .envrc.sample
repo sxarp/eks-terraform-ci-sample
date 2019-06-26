@@ -1,0 +1,2 @@
+export AWS_ACCESS_KEY_ID="Ask someone to get the ID."
+export AWS_SECRET_ACCESS_KEY="Ask someone to get the key."
