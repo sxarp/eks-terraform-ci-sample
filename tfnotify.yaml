@@ -5,7 +5,7 @@ notifier:
     token: $GITHUB_TOKEN
     repository:
       owner: "sxarp"
-      name: "eks-terraform-ci"
+      name: "eks-terraform-ci-sample"
 terraform:
   fmt:
     template: |
