@@ -1,0 +1,9 @@
+version: '3'
+services:
+  terraform:
+    build: terraform
+    working_dir: /terraform
+    command: tail -f /dev/null
+    volumes:
+      - ./terraform:/terraform
+    env_file: .env
