@@ -14,4 +14,8 @@ jobs:
             echo "export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> $BASH_ENV
             terraform init
             terraform plan
-
+      - run:
+          name: notify
+          command: |
+            go get -u github.com/mercari/tfnotify
+            terraform plan | tfnotify plan
