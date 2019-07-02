@@ -18,7 +18,7 @@ terraform:
       {{ .Body }}
   plan:
     template: |
-      {{ .Title }} <sup>[CI link]( {{ .Link }} )</sup>
+      {{ .Title }} [[**CI link**]]( {{ .Link }} )
       {{ .Message }}
       {{if .Result}}
       <pre><code> {{ .Result }}
