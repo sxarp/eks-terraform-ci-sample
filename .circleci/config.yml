@@ -17,5 +17,4 @@ jobs:
       - run:
           name: notify
           command: |
-            go get -u github.com/mercari/tfnotify
-            terraform plan | tfnotify plan
+            terraform plan | .circleci/bin/tfnotify plan
