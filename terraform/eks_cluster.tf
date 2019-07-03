@@ -59,7 +59,6 @@ resource "aws_security_group_rule" "sample-cluster-ingress-workstation-https" {
 
 # クラスタ本体
 # 高いので使ってない時は消しておく
-# /*
 resource "aws_eks_cluster" "sample" {
   name            = "${var.cluster-name}"
   role_arn        = "${aws_iam_role.sample-cluster.arn}"
@@ -74,4 +73,3 @@ resource "aws_eks_cluster" "sample" {
     "aws_iam_role_policy_attachment.sample-cluster-AmazonEKSServicePolicy",
   ]
 }
-# */
