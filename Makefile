@@ -5,7 +5,7 @@ terraform-stop:
 	docker-compose down
 
 terraform-plan:
-	docker-compose exec terraform terraform plan
+	docker-compose exec terraform terraform plan -lock=false
 
 terraform-init:
 	docker-compose exec terraform terraform init
