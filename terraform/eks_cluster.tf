@@ -61,7 +61,6 @@ resource "aws_security_group_rule" "sample-cluster-ingress-workstation-https" {
 # 高いので使ってない時は消しておく
 # /*
 resource "aws_eks_cluster" "sample" {
-  count           = 1
   name            = "${var.cluster-name}"
   role_arn        = "${aws_iam_role.sample-cluster.arn}"
 
