@@ -14,5 +14,11 @@ terraform-init:
 terraform-apply:
 	docker-compose exec terraform terraform apply
 
+eks-kubeconfig:
+	aws eks update-kubeconfig --name terraform-eks-sample --profile eks
+
+eks-delete:
+	aws eks delete-cluster --name terraform-eks-sample
+
 circleci-validate:
 	circleci config validate
