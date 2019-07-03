@@ -13,3 +13,6 @@ terraform-init:
 # ローカルからのapplyは非推奨!!
 terraform-apply:
 	docker-compose exec terraform terraform apply
+
+circleci-validate:
+	circleci config validate
