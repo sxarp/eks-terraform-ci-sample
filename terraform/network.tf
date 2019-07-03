@@ -34,3 +34,31 @@ resource "aws_subnet" "sample" {
     )
   }"
 }
+
+resource "aws_internet_gateway" "sample" {
+  vpc_id = "${aws_vpc.sample.id}"
+
+  tags = {
+    Name = "terraform-eks-sample"
+  }
+}
+
+resource "aws_route_table" "sample" {
+  vpc_id = "${aws_vpc.sample.id}"
+  /*
+  このroute tableがassociateされたsubnetはパブリックとなり、インターネットから/へのアクセスが可能となる
+  >A subnet that's associated with a route table that has a route to an Internet gateway is known as a public subnet.
+  https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Scenario1.html
+  */
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = "${aws_internet_gateway.sample.id}"
+  }
+}
+
+resource "aws_route_table_association" "sample" {
+  count = 2
+
+  subnet_id      = "${aws_subnet.sample.*.id[count.index]}"
+  route_table_id = "${aws_route_table.sample.id}"
+}
