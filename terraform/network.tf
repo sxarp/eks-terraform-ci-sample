@@ -1,3 +1,8 @@
+/* VPC周り
+[参考]
+https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html
+https://learn.hashicorp.com/terraform/aws/eks-intro#base-vpc-networking
+*/
 resource "aws_vpc" "sample" {
   cidr_block = "10.101.0.0/16"
 
