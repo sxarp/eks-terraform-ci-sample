@@ -132,10 +132,14 @@ resource "aws_launch_configuration" "sample" {
 }
 
 resource "aws_autoscaling_group" "sample" {
-  desired_capacity     = 2
   launch_configuration = "${aws_launch_configuration.sample.id}"
+
+  # 0にしておくと、desired_capaciry=0でインスタンスを全部落とせる
+  min_size             = 0
+
+  desired_capacity     = 2
   max_size             = 2
-  min_size             = 1
+
   name                 = "terraform-eks-sample"
   vpc_zone_identifier  = aws_subnet.sample[*].id
 
