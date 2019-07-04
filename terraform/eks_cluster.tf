@@ -1,4 +1,7 @@
-# IAM関連
+/* IAM関連
+[参考]
+https://learn.hashicorp.com/terraform/aws/eks-intro#eks-master-cluster-iam-role
+*/
 resource "aws_iam_role" "sample-cluster" {
   name = "terraform-eks-sample-cluster"
 
@@ -29,7 +32,12 @@ resource "aws_iam_role_policy_attachment" "sample-cluster-AmazonEKSServicePolicy
 }
 
 
-# SG関連
+/* SG関連
+worker nodeからの通信を許可する
+[参考]
+https://learn.hashicorp.com/terraform/aws/eks-intro#eks-master-cluster-security-group
+*/
+
 resource "aws_security_group" "sample-cluster" {
   name        = "terraform-eks-sample-cluster"
   description = "Cluster communication with worker nodes"
@@ -57,8 +65,11 @@ resource "aws_security_group_rule" "sample-cluster-ingress-workstation-https" {
   type              = "ingress"
 }
 
-# クラスタ本体
-# 高いので使ってない時は消しておく
+/* クラスタ本体
+高いので使ってない時は消しておく
+[参考]
+https://learn.hashicorp.com/terraform/aws/eks-intro#eks-master-cluster
+*/
 resource "aws_eks_cluster" "sample" {
   name            = "${var.cluster-name}"
   role_arn        = "${aws_iam_role.sample-cluster.arn}"

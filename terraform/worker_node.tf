@@ -1,4 +1,7 @@
-# IAM関連
+/* IAM関連
+[参考]
+https://learn.hashicorp.com/terraform/aws/eks-intro#worker-node-iam-role-and-instance-profile
+*/
 resource "aws_iam_role" "sample-node" {
   name = "terraform-eks-sample-node"
 
@@ -38,8 +41,10 @@ resource "aws_iam_instance_profile" "sample-node" {
   role = "${aws_iam_role.sample-node.name}"
 }
 
-# SG関連
-# 参考: https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html
+/* SG関連
+[参考]
+https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html
+*/
 
 resource "aws_security_group" "sample-node" {
   name        = "terraform-eks-sample-node"
