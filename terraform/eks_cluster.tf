@@ -66,6 +66,7 @@ resource "aws_security_group_rule" "sample-cluster-ingress-node-https" {
   type                     = "ingress"
 }
 
+# TODO: 必要性を検証
 resource "aws_security_group_rule" "sample-cluster-ingress-workstation-https" {
   cidr_blocks       = ["111.108.8.42/32"]
   description       = "Allow workstation to communicate with the cluster API Server"
