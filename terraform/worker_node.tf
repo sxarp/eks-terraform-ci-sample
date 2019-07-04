@@ -151,3 +151,32 @@ resource "aws_autoscaling_group" "sample" {
     propagate_at_launch = true
   }
 }
+
+/* worker nodesをクラスターに参加させるConfigMap
+以下で取得可能:
+$ terraform output config_map_aws_auth
+[参考]
+https://learn.hashicorp.com/terraform/aws/eks-intro#required-kubernetes-configuration-to-join-worker-nodes
+*/
+locals {
+  config_map_aws_auth = <<CONFIGMAPAWSAUTH
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aws-auth
+  namespace: kube-system
+data:
+  mapRoles: |
+    - rolearn: ${aws_iam_role.sample-node.arn}
+      username: system:node:{{EC2PrivateDNSName}}
+      groups:
+        - system:bootstrappers
+        - system:nodes
+CONFIGMAPAWSAUTH
+}
+
+output "config_map_aws_auth" {
+  value = "${local.config_map_aws_auth}"
+}
