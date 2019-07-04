@@ -20,5 +20,8 @@ eks-kubeconfig:
 eks-delete:
 	aws eks delete-cluster --name terraform-eks-sample
 
+eks-register-workers:
+	docker-compose exec terraform terraform output config_map_aws_auth | kubectl apply -f -
+
 circleci-validate:
 	circleci config validate
