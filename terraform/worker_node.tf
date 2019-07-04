@@ -130,3 +130,24 @@ resource "aws_launch_configuration" "sample" {
     create_before_destroy = true
   }
 }
+
+resource "aws_autoscaling_group" "sample" {
+  desired_capacity     = 2
+  launch_configuration = "${aws_launch_configuration.sample.id}"
+  max_size             = 2
+  min_size             = 1
+  name                 = "terraform-eks-sample"
+  vpc_zone_identifier  = aws_subnet.sample[*].id
+
+  tag {
+    key                 = "Name"
+    value               = "terraform-eks-sample"
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "kubernetes.io/cluster/${var.cluster-name}"
+    value               = "owned"
+    propagate_at_launch = true
+  }
+}
