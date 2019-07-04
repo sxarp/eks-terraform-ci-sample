@@ -86,6 +86,21 @@ resource "aws_security_group_rule" "sample-node-ingress-cluster" {
   type                     = "ingress"
 }
 
+# worker nodesにssh出来るようにする
+resource "aws_security_group_rule" "ssh-to-worker-nodes" {
+  description              = "Allow ssh from anywhere to worker nodes."
+
+  # 必要に応じて絞ること
+  cidr_blocks              = ["0.0.0.0/0"]
+
+  from_port                = 22
+  to_port                  = 22
+
+  protocol                 = "tcp"
+  security_group_id        = "${aws_security_group.sample-node.id}"
+  type                     = "ingress"
+}
+
 /* AutoScaling Group関連
 [参考]
 https://learn.hashicorp.com/terraform/aws/eks-intro#worker-node-autoscaling-group
@@ -122,6 +137,21 @@ resource "aws_launch_configuration" "sample" {
   */
   instance_type               = "m4.large"
 
+  /*
+  worker nodesにsshできるようにする
+  worker nodes内で問題が起きる場合もあるので設定することを推奨
+
+  worker nodeのIPを特定(コンソールからも見られる):
+  $ kubectl get node -o json | jq '.items | map(.status.addresses) | flatten | map(select(.type=="ExternalIP"))'
+
+  ssh:
+  $ ssh ec2-user@IP_ADDRESS -i ~/.ssh/eks-sample.pem
+
+  kubeletのログを見る:
+  $ [ec2-user@ip-10-101-0-59 ~]$ journalctl -u kubelet
+  */
+  key_name                    = "eks-sample"
+
   name_prefix                 = "terraform-eks-sample"
   security_groups             = ["${aws_security_group.sample-node.id}"]
   user_data_base64            = "${base64encode(local.sample-node-userdata)}"
@@ -132,10 +162,14 @@ resource "aws_launch_configuration" "sample" {
 }
 
 resource "aws_autoscaling_group" "sample" {
-  desired_capacity     = 2
   launch_configuration = "${aws_launch_configuration.sample.id}"
+
+  # 0にしておくと、desired_capaciry=0でインスタンスを全部落とせる
+  min_size             = 0
+
+  desired_capacity     = 2
   max_size             = 2
-  min_size             = 1
+
   name                 = "terraform-eks-sample"
   vpc_zone_identifier  = aws_subnet.sample[*].id
 

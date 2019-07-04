@@ -23,5 +23,8 @@ eks-delete:
 eks-register-workers:
 	docker-compose exec terraform terraform output config_map_aws_auth | kubectl apply -f -
 
+eks-delete-workers:
+	aws autoscaling set-desired-capacity --auto-scaling-group-name terraform-eks-sample --desired-capacity 0
+
 circleci-validate:
 	circleci config validate
