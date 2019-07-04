@@ -36,6 +36,7 @@ resource "aws_iam_role_policy_attachment" "sample-cluster-AmazonEKSServicePolicy
 worker nodeからの通信を許可する
 [参考]
 https://learn.hashicorp.com/terraform/aws/eks-intro#eks-master-cluster-security-group
+https://learn.hashicorp.com/terraform/aws/eks-intro#worker-node-access-to-eks-master-cluster
 */
 
 resource "aws_security_group" "sample-cluster" {
@@ -53,6 +54,16 @@ resource "aws_security_group" "sample-cluster" {
   tags = {
     Name = "terraform-eks-sample"
   }
+}
+
+resource "aws_security_group_rule" "sample-cluster-ingress-node-https" {
+  description              = "Allow pods to communicate with the cluster API Server"
+  from_port                = 443
+  protocol                 = "tcp"
+  security_group_id        = "${aws_security_group.sample-cluster.id}"
+  source_security_group_id = "${aws_security_group.sample-node.id}"
+  to_port                  = 443
+  type                     = "ingress"
 }
 
 resource "aws_security_group_rule" "sample-cluster-ingress-workstation-https" {
