@@ -1,30 +1,54 @@
-terraform-start:
-	docker-compose up -d; docker-compose exec terraform terraform init
+# ---------- General -------------
 
-terraform-stop:
+# ローカル開発環境立ち上げ
+start:
+	docker-compose up -d
+
+# ローカル開発環境停止
+stop:
 	docker-compose down
 
-terraform-plan:
-	docker-compose exec terraform terraform plan -lock=false
+# ---------- aliases -------------
+exec-terraform=docker-compose exec terraform terraform
+cluster-name=terraform-eks-sample
 
+# ---------- terraform -------------
+
+# terraformを初期化する(最初に打つ必要あり)
 terraform-init:
-	docker-compose exec terraform terraform init
+	$(exec-terraform) init
 
-# ローカルからのapplyは非推奨!!
+# terraform planを実行する
+# -lock=falseな理由は、CIのplanとぶつかると邪魔くさいため(どうせCIでplanは確認するので問題ない)
+terraform-plan:
+	$(exec-terraform) plan -lock=false
+
+# terraform applyする
+# 開発の都合上用意しているが、ローカルからのapplyは特に本番環境の場合は非推奨なので注意
+# (CI経由でなくローカルから直接デプロイがイケてないのと一緒)
 terraform-apply:
-	docker-compose exec terraform terraform apply
+	$(exec-terraform) apply
 
+# ---------- EKS -------------
+
+# kubecltをEKSに向ける
 eks-kubeconfig:
-	aws eks update-kubeconfig --name terraform-eks-sample --profile eks
+	aws eks update-kubeconfig --name $(cluster-name) --profile eks
 
-eks-delete:
-	aws eks delete-cluster --name terraform-eks-sample
-
+# worker nodeをクラスタに参加させる
 eks-register-workers:
-	docker-compose exec terraform terraform output config_map_aws_auth | kubectl apply -f -
+	$(exec-terraform) output config_map_aws_auth | kubectl apply -f -
 
+# worker nodeを落とす
 eks-delete-workers:
-	aws autoscaling set-desired-capacity --auto-scaling-group-name terraform-eks-sample --desired-capacity 0
+	aws autoscaling set-desired-capacity --auto-scaling-group-name $(cluster-name) --desired-capacity 0
 
+# EKSを削除する(開発用)
+eks-delete:
+	aws eks delete-cluster --name $(cluster-name)
+
+# ---------- Utilities -------------
+
+# .circleci/config.ymlをチェックする、config.ymlをイジった後打つと捗る
 circleci-validate:
 	circleci config validate
