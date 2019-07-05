@@ -1,0 +1,15 @@
+# tag付け方法: git hash-object .circleci/k8s_ci_image
+FROM python:rc-alpine3.10
+
+ARG CLI_VERSION=1.16.190
+ARG KUBECTL_VERSION=1.15.0
+
+# add aws-cli
+RUN apk -uv add --no-cache groff jq less && \
+    pip install --no-cache-dir awscli==$CLI_VERSION
+
+# add kubectl
+# 最新バーションはこちらで探す:
+# https://aur.archlinux.org/packages/kubectl-bin/
+RUN wget https://storage.googleapis.com/kubernetes-release/release/v$KUBECTL_VERSION/bin/linux/amd64/kubectl ; \
+    mv kubectl /usr/local/bin/kubectl; chmod +x /usr/local/bin/kubectl
