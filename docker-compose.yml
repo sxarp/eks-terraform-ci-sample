@@ -7,3 +7,11 @@ services:
     volumes:
       - ./terraform:/terraform
     env_file: .env
+  app:
+    image: golang:1.12.6
+    working_dir: /go/src/github.com/sxarp/eks-terraform-ci-sample/app
+    command: tail -f /dev/null
+    environment:
+      - GO111MODULE=on
+    volumes:
+      - ./app:/go/src/github.com/sxarp/eks-terraform-ci-sample/app
