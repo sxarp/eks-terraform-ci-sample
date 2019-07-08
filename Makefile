@@ -58,6 +58,10 @@ app-test:
 app-watch:
 	find app -name '*.go' | entr make app-test
 
+# serverを起動する、Port 8080でlistenしている
+app-server-start:
+	docker-compose exec app go run ./...
+
 # ---------- Utilities -------------
 
 # .circleci/config.ymlをチェックする、config.ymlをイジった後打つと捗る
