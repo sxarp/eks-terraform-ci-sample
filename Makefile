@@ -47,6 +47,21 @@ eks-delete-workers:
 eks-delete:
 	aws eks delete-cluster --name $(cluster-name)
 
+# ---------- App ------------
+
+# テストを実行する(事前に`make start`を打っておくこと)
+app-test:
+	docker-compose exec app go test -v ./...
+
+# ファイルが変更された時にテストをまわす
+# entrが入ってない場合は`brew install entr`
+app-watch:
+	find app -name '*.go' | entr make app-test
+
+# serverを起動する、Port 8080でlistenしている
+app-server-start:
+	docker-compose exec app go run ./...
+
 # ---------- Utilities -------------
 
 # .circleci/config.ymlをチェックする、config.ymlをイジった後打つと捗る
