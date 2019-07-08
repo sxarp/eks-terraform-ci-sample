@@ -53,6 +53,19 @@ jobs:
             cd terraform
             terraform apply -auto-approve
 
+  app-test:
+    working_directory: ~/repo
+    docker:
+       - image: circleci/golang:1.12.6
+         environment:
+           GO111MODULE: "on"
+    steps:
+      - checkout
+      - run:
+          name: test
+          command: |
+            go test -v ./app/...
+
   kubectl-apply:
     executor: kubectl
     steps:
@@ -78,6 +91,7 @@ workflows:
             branches:
               only:
                 - master
+      - app-test
       - kubectl-apply:
           filters:
             branches:
