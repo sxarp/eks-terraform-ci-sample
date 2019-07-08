@@ -61,10 +61,17 @@ jobs:
            GO111MODULE: "on"
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - go-mod-{{ checksum "app/go.sum" }}
       - run:
           name: test
           command: |
             go test -v ./app/...
+      - save_cache:
+          key: go-mod-{{ checksum "app/go.sum" }}
+          paths:
+            - "/go/pkg/mod"
 
   kubectl-apply:
     executor: kubectl
