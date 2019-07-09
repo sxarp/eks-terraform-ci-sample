@@ -34,7 +34,7 @@ resource "aws_security_group" "sample-alb" {
   }
 }
 
-resource "aws_security_group_rule" "access_to_alb" {
+resource "aws_security_group_rule" "access-to-alb" {
   description              = "Allow aceess to ALB from anywhere"
   from_port                = 0
   protocol                 = "-1"
@@ -42,4 +42,16 @@ resource "aws_security_group_rule" "access_to_alb" {
   cidr_blocks              = ["0.0.0.0/0"]
   to_port                  = 65535
   type                     = "ingress"
+}
+
+resource "aws_alb_target_group" "sample" {
+  name     = "sample-target-group"
+  port     = 30001
+  protocol = "HTTP"
+  vpc_id   = "${aws_vpc.sample.id}"
+}
+
+resource "aws_autoscaling_attachment" "sample" {
+  autoscaling_group_name = "${aws_autoscaling_group.sample.id}"
+  alb_target_group_arn   = "${aws_alb_target_group.sample.arn}"
 }
