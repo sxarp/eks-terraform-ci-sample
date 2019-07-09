@@ -99,7 +99,11 @@ jobs:
             docker build -t $IMAGE_NAME app
             docker push $IMAGE_NAME
 
-  kubectl-apply:
+  k8s-deploy:
+    parameters:
+      target:
+        type: enum
+        enum: ["staging", "production"]
     executor: kubectl
     steps:
       - checkout
@@ -110,7 +114,17 @@ jobs:
       - run:
           name: kubectl apply
           command: |
-            kubectl get node
+            cd k8s/<<parameters.target>>
+
+            IMAGE_NAME=705180747189.dkr.ecr.ap-northeast-1.amazonaws.com/terraform-eks-sample/app:$CIRCLE_SHA1
+
+            cat \<<EOF >> kustomization.yaml
+            images:
+              - name: sample
+                newName: $IMAGE_NAME
+            EOF
+
+            kubectl apply -k .
 
 workflows:
   version: 2
@@ -125,13 +139,14 @@ workflows:
               only:
                 - master
       - app-test
+      - hold-app-build:
+          type: approval
+          requires:
+           - app-test
       - app-build:
-          filters:
-            branches:
-              only:
-                - master
-      - kubectl-apply:
-          filters:
-            branches:
-              only:
-                - master
+          requires:
+           - hold-app-build
+      - k8s-deploy:
+          target: staging
+          requires:
+           - app-build

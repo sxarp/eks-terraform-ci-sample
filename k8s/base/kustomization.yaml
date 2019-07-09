@@ -1,0 +1,5 @@
+commonLabels:
+  app: sample
+resources:
+  - deployment.yaml
+  - service.yaml
