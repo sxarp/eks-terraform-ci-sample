@@ -67,3 +67,7 @@ app-server-start:
 # .circleci/config.ymlをチェックする、config.ymlをイジった後打つと捗る
 circleci-validate:
 	circleci config validate
+
+# ALBの削除
+alb-delete:
+	aws elbv2 delete-load-balancer --load-balancer-arn $$(aws elbv2 describe-load-balancers | jq -r '.LoadBalancers | map(select(.LoadBalancerName=="eks-sample"))[0].LoadBalancerArn')
