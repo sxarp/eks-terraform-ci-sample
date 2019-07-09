@@ -32,6 +32,8 @@ resource "aws_lb_listener" "sample" {
   }
 }
 
+/* SG関連
+*/
 resource "aws_security_group" "sample-alb" {
   name        = "terraform-eks-sample-alb"
   description = "Security group for alb"
@@ -55,6 +57,8 @@ resource "aws_security_group_rule" "access-to-alb" {
   type                     = "ingress"
 }
 
+/* TG関連
+*/
 resource "aws_alb_target_group" "sample" {
   name     = "sample-target-group"
   port     = 30001
