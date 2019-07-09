@@ -1,0 +1,13 @@
+namespace: staging
+bases:
+  - ../base
+resources:
+  - namespace.yaml
+patches:
+  - node_port.yaml
+
+# `kubeclt apply -k staging`前に以下を追加すること:
+#
+# images:
+#  - name: sample
+#    newName: 705180747189.dkr.ecr.ap-northeast-1.amazonaws.com/terraform-eks-sample/app:$(git rev-parse HEAD)
