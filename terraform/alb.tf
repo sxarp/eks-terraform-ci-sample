@@ -64,6 +64,10 @@ resource "aws_alb_target_group" "sample" {
   port     = 30001
   protocol = "HTTP"
   vpc_id   = "${aws_vpc.sample.id}"
+
+  health_check {
+    path = "/health"
+  }
 }
 
 resource "aws_autoscaling_attachment" "sample" {
