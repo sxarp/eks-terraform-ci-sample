@@ -101,6 +101,17 @@ resource "aws_security_group_rule" "ssh-to-worker-nodes" {
   type                     = "ingress"
 }
 
+# ALBからアクセスできるようにする
+resource "aws_security_group_rule" "access-from-alb" {
+  description              = "Allow access from ALB"
+  from_port                = 0
+  protocol                 = "-1"
+  security_group_id        = "${aws_security_group.sample-node.id}"
+  source_security_group_id = "${aws_security_group.sample-alb.id}"
+  to_port                  = 65535
+  type                     = "ingress"
+}
+
 /* AutoScaling Group関連
 [参考]
 https://learn.hashicorp.com/terraform/aws/eks-intro#worker-node-autoscaling-group
