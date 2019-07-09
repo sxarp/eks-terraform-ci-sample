@@ -7,8 +7,6 @@ resource "aws_lb" "sample" {
   security_groups    = ["${aws_security_group.sample-alb.id}"]
   subnets            = aws_subnet.sample[*].id
 
-  enable_deletion_protection = true
-
   # access logの有効化を推奨
   # access_logs {
   #   bucket  = "${aws_s3_bucket.sample_alb_log.bucket}"
