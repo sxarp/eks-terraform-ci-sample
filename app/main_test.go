@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 )
 
@@ -15,8 +14,8 @@ func panicif(err error) {
 }
 
 func TestHandler(t *testing.T) {
-	body := "Sophie"
-	req, err := http.NewRequest("GET", "/", strings.NewReader(body))
+	path := "Sophie"
+	req, err := http.NewRequest("GET", "/"+path, nil)
 	panicif(err)
 
 	rr, server := httptest.NewRecorder(), http.HandlerFunc(handler)
@@ -27,7 +26,7 @@ func TestHandler(t *testing.T) {
 			status, http.StatusOK)
 	}
 
-	if gotBody, wantBody := rr.Body.String(), fmt.Sprintf("Hello, %s!", body); gotBody != wantBody {
+	if gotBody, wantBody := rr.Body.String(), fmt.Sprintf("Hello, %s!", path); gotBody != wantBody {
 		t.Errorf("hendler returned wrong body: got [%v], want [%v]", gotBody, wantBody)
 	}
 }

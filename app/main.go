@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
@@ -11,13 +10,7 @@ import (
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	fmt.Fprintf(w, "Hello, %s!", body)
+	fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
 }
 
 func loggingMiddleware(next http.Handler) http.Handler {
@@ -29,7 +22,7 @@ func loggingMiddleware(next http.Handler) http.Handler {
 
 func main() {
 	r := mux.NewRouter()
-	r.HandleFunc("/", handler).Methods("GET")
+	r.HandleFunc("/{.*}", handler).Methods("GET")
 	r.Use(loggingMiddleware)
 
 	srv := &http.Server{
