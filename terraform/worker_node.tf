@@ -178,7 +178,7 @@ resource "aws_autoscaling_group" "sample" {
   # 0にしておくと、desired_capaciry=0でインスタンスを全部落とせる
   min_size             = 0
 
-  desired_capacity     = 2
+  desired_capacity     = 1
   max_size             = 5
 
   name                 = "terraform-eks-sample"
@@ -199,7 +199,6 @@ resource "aws_autoscaling_group" "sample" {
 
 resource "aws_autoscaling_policy" "sample" {
   name                   = "scale-based-on-cpu-utilization"
-  adjustment_type        = "ChangeInCapacity"
   autoscaling_group_name = "${aws_autoscaling_group.sample.name}"
   policy_type            = "TargetTrackingScaling"
 
