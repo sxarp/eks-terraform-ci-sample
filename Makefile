@@ -15,18 +15,18 @@ cluster-name=terraform-eks-sample
 # ---------- terraform -------------
 
 # terraformを初期化する(最初に打つ必要あり)
-terraform-init:
+terraform-init: start
 	$(exec-terraform) init
 
 # terraform planを実行する
 # -lock=falseな理由は、CIのplanとぶつかると邪魔くさいため(どうせCIでplanは確認するので問題ない)
-terraform-plan:
+terraform-plan: terraform-init
 	$(exec-terraform) plan -lock=false
 
 # terraform applyする
 # 開発の都合上用意しているが、ローカルからのapplyは特に本番環境の場合は非推奨なので注意
 # (CI経由でなくローカルから直接デプロイがイケてないのと一緒)
-terraform-apply:
+terraform-apply: terraform-init
 	$(exec-terraform) apply
 
 # ---------- EKS -------------
@@ -36,7 +36,7 @@ eks-kubeconfig:
 	aws eks update-kubeconfig --name $(cluster-name) --profile eks
 
 # worker nodeをクラスタに参加させる
-eks-register-workers:
+eks-register-workers: terraform-init eks-kubeconfig
 	$(exec-terraform) output config_map_aws_auth | kubectl apply -f -
 
 # worker nodeを落とす
@@ -50,16 +50,16 @@ eks-delete:
 # ---------- App ------------
 
 # テストを実行する(事前に`make start`を打っておくこと)
-app-test:
+app-test: start
 	docker-compose exec app go test -v ./...
 
 # ファイルが変更された時にテストをまわす
 # entrが入ってない場合は`brew install entr`
-app-watch:
+app-watch: start
 	find app -name '*.go' | entr make app-test
 
 # serverを起動する、Port 8080でlistenしている
-app-server-start:
+app-server-start: start
 	docker-compose exec app go run ./...
 
 # ---------- Utilities -------------
@@ -73,6 +73,6 @@ alb-delete:
 	aws elbv2 delete-load-balancer --load-balancer-arn $$(aws elbv2 describe-load-balancers | jq -r '.LoadBalancers | map(select(.LoadBalancerName=="eks-sample"))[0].LoadBalancerArn')
 
 # ALBのDNS名の取得
-# 使用例: `curl http://$(make -s alb-endpoint)/test`
+# 使用例 `curl $(make -s alb-endpoint)/test`
 alb-endpoint:
 	aws elbv2 describe-load-balancers | jq -r '.LoadBalancers | map(select(.LoadBalancerName=="eks-sample"))[0].DNSName'
