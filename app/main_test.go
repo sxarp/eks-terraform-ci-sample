@@ -30,3 +30,18 @@ func TestHandler(t *testing.T) {
 		t.Errorf("hendler returned wrong body: got [%v], want [%v]", gotBody, wantBody)
 	}
 }
+
+func TestSlowHandler(t *testing.T) {
+	req, err := http.NewRequest("GET", "/slow", nil)
+	panicif(err)
+	rr, server := httptest.NewRecorder(), http.HandlerFunc(slowHandler)
+	server.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("status code is expected to be 200")
+	}
+
+	if r := rr.Body.String(); r != "OK: v=0.739085" {
+		t.Errorf("Unexpected response body")
+	}
+}
