@@ -31,7 +31,19 @@ spec:
       - name: metrics-server
         image: k8s.gcr.io/metrics-server-amd64:v0.3.3
         imagePullPolicy: Always
+        # 以下起動オプションを追加している
+        # 経緯としては以下のようなエラーが出ていて
+        # $ kubectl top node
+        #   Error from server (ServiceUnavailable): the server is currently unable to handle the request (get nodes.metrics.k8s.io)
+        # $ stern -n kube-system metric
+        # ....
+        # metrics-server-6c6c6c6457-6s7ct metrics-server E0710 05:02:38.034206       1 manager.go:111] unable to fully collect metrics: [unable to fully scrape metrics from source kubelet_summary:ip-10-101-1-15.ap-northeast-1.compute.internal: unable to fetch metrics from Kubelet ip-10-101-1-15.ap-northeast-1.compute.internal (ip-10-101-1-15.ap-northeast-1.compute.internal): Get https://ip-10-101-1-15.ap-northeast-1.compute.internal:10250/stats/summary/: dial tcp: lookup ip-10-101-1-15.ap-northeast-1.compute.internal on 172.20.0.10:53: no such host, unable to fully scrape metrics from source kubelet_summary:ip-10-101-0-13.ap-northeast-1.compute.internal: unable to fetch metrics from Kubelet ip-10-101-0-13.ap-northeast-1.compute.internal (ip-10-101-0-13.ap-northeast-1.compute.internal): Get https://ip-10-101-0-13.ap-northeast-1.compute.internal:10250/stats/summary/: dial tcp: lookup ip-10-101-0-13.ap-northeast-1.compute.internal on 172.20.0.10:53: no such host]
+        # ....
+        # その対策が以下のissueコメントに書いてあったので採用した
+        # https://github.com/kubernetes-incubator/metrics-server/issues/129#issuecomment-420411264
+        command:
+          - /metrics-server
+          - --kubelet-preferred-address-types=InternalIP
         volumeMounts:
         - name: tmp-dir
           mountPath: /tmp
-
