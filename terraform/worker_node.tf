@@ -146,7 +146,7 @@ resource "aws_launch_configuration" "sample" {
   ネットワークが遅いとimageのpullに異常に時間がかかることがあるので
   参考: https://aws.amazon.com/ec2/instance-types/
   */
-  instance_type               = "t2.micro"
+  instance_type               = "t2.small" # microだとmetrics-serverが立ち上がらない
 
   /*
   worker nodesにsshできるようにする
