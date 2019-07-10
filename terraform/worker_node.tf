@@ -78,7 +78,8 @@ resource "aws_security_group_rule" "sample-node-ingress-self" {
 
 resource "aws_security_group_rule" "sample-node-ingress-cluster" {
   description              = "Allow worker Kubelets and pods to receive communication from the cluster control plane"
-  from_port                = 1025
+  # cluster -> worker nodesで443が許可されてないとmetrics-serverがうまく動かない
+  from_port                = 0
   protocol                 = "tcp"
   security_group_id        = "${aws_security_group.sample-node.id}"
   source_security_group_id = "${aws_security_group.sample-cluster.id}"
@@ -178,8 +179,8 @@ resource "aws_autoscaling_group" "sample" {
   # 0にしておくと、desired_capaciry=0でインスタンスを全部落とせる
   min_size             = 0
 
-  desired_capacity     = 2
-  max_size             = 2
+  desired_capacity     = 1
+  max_size             = 5
 
   name                 = "terraform-eks-sample"
   vpc_zone_identifier  = aws_subnet.sample[*].id
@@ -194,6 +195,20 @@ resource "aws_autoscaling_group" "sample" {
     key                 = "kubernetes.io/cluster/${var.cluster-name}"
     value               = "owned"
     propagate_at_launch = true
+  }
+}
+
+resource "aws_autoscaling_policy" "sample" {
+  name                   = "scale-based-on-cpu-utilization"
+  autoscaling_group_name = "${aws_autoscaling_group.sample.name}"
+  policy_type            = "TargetTrackingScaling"
+
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ASGAverageCPUUtilization"
+    }
+
+    target_value = 15.0
   }
 }
 

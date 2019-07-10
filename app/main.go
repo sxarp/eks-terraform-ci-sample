@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math"
 	"net/http"
 	"os"
 	"os/signal"
@@ -15,6 +16,15 @@ import (
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
+}
+
+// 負荷試験用
+func slowHandler(w http.ResponseWriter, r *http.Request) {
+	v := 0.5
+	for i := 0; i < 9999999; i++ {
+		v = math.Cos(v)
+	}
+	fmt.Fprintf(w, "OK: v=%f", v)
 }
 
 func loggingMiddleware(next http.Handler) http.Handler {
@@ -46,6 +56,7 @@ func gracefulShutdown(srv *http.Server) {
 
 func main() {
 	r := mux.NewRouter()
+	r.HandleFunc("/slow", slowHandler).Methods("GET")
 	r.HandleFunc("/{.*}", handler).Methods("GET")
 	r.Use(loggingMiddleware)
 
