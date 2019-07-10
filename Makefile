@@ -71,3 +71,8 @@ circleci-validate:
 # ALBの削除
 alb-delete:
 	aws elbv2 delete-load-balancer --load-balancer-arn $$(aws elbv2 describe-load-balancers | jq -r '.LoadBalancers | map(select(.LoadBalancerName=="eks-sample"))[0].LoadBalancerArn')
+
+# ALBのDNS名の取得
+# 使用例: `curl http://$(make -s alb-endpoint)/test`
+alb-endpoint:
+	aws elbv2 describe-load-balancers | jq -r '.LoadBalancers | map(select(.LoadBalancerName=="eks-sample"))[0].DNSName'
