@@ -179,7 +179,7 @@ resource "aws_autoscaling_group" "sample" {
   min_size             = 0
 
   desired_capacity     = 2
-  max_size             = 2
+  max_size             = 5
 
   name                 = "terraform-eks-sample"
   vpc_zone_identifier  = aws_subnet.sample[*].id
@@ -194,6 +194,21 @@ resource "aws_autoscaling_group" "sample" {
     key                 = "kubernetes.io/cluster/${var.cluster-name}"
     value               = "owned"
     propagate_at_launch = true
+  }
+}
+
+resource "aws_autoscaling_policy" "sample" {
+  name                   = "scale-based-on-cpu-utilization"
+  adjustment_type        = "ChangeInCapacity"
+  autoscaling_group_name = "${aws_autoscaling_group.sample.name}"
+  policy_type            = "TargetTrackingScaling"
+
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ASGAverageCPUUtilization"
+    }
+
+    target_value = 15.0
   }
 }
 
