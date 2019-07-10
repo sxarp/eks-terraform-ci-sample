@@ -5,7 +5,9 @@ metadata:
   labels:
     app: sample
 spec:
-  replicas: 2
+  # hpaを使う場合replicasは指定しない(apply時にhpaが設定したpod数が上書きされてしまう)
+  # 参考: https://github.com/kubernetes/kubernetes/issues/25238
+  # replicas: 2
   selector:
     matchLabels:
       app: sample
