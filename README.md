@@ -3,11 +3,14 @@ EKS infrastructure
 
 # terraform
 - `.env`を`.env.sample`を参考にしながらセットアップしてください
-- `$ make terraform-start`でplan用のコンテナが起動します
-- `$ make terraform-plan`で`terraform plan`が打てます
-- `$ make terraform-stop`でコンテナを落とします
 
-# kubectl
+`terraform plan`の実行
+
+```sh
+$ make terraform-plan`で`terraform plan
+```
+
+# k8s
 
 kubectlが打てるように設定します。
 
@@ -48,4 +51,17 @@ NAME          STATUS    AGE
 default       Active    36m
 kube-public   Active    36m
 kube-system   Active    36m
+```
+
+# app
+
+テストの実行
+
+```sh
+$ make app-test
+```
+
+サーバーの起動
+```sh
+$ make app-server-start
 ```
