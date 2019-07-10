@@ -8,7 +8,16 @@ spec:
     kind: Deployment
     name: sample
   minReplicas: 2
-  maxReplicas: 10
+  # リソース不足でpending状態のpodがある時hpaは停止する
+  # この状態で負荷が減少してもhpaはpod数を調整しない(pendingが解消されないので)
+  # 逆に負荷が継続していて、worker nodeが新たに投入される場合は、pendingは解消され
+  # hpaの調整が再び動き出す
+  # 負荷減少時に、pod数がちゃんと減少するには、maxReplicasは
+  # worker nodesスケールアウト時の最大性能を超えないようにするのが無難かもしれない
+  # いずれにしても、負荷が急激に減少して、pendingのpodがある状態でworker nodeの供給が止まると
+  # hpaは大量のpodをpending状態にさせたままstuckしてしまう模様
+  # 関連issue: https://github.com/kubernetes/kubernetes/issues/79158
+  maxReplicas: 20
   metrics:
   - type: Resource
     resource:
