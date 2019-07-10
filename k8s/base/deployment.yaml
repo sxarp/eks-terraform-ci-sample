@@ -22,6 +22,6 @@ spec:
         # hpaがうまくpodをスケールさせるには制限が必要
         resources:
           limits:
-            cpu: 250m
+            cpu: 150m
           requests:
-            cpu: 250m
+            cpu: 150m
