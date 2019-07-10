@@ -78,7 +78,8 @@ resource "aws_security_group_rule" "sample-node-ingress-self" {
 
 resource "aws_security_group_rule" "sample-node-ingress-cluster" {
   description              = "Allow worker Kubelets and pods to receive communication from the cluster control plane"
-  from_port                = 1025
+  # cluster -> worker nodesで443が許可されてないとmetrics-serverがうまく動かない
+  from_port                = 0
   protocol                 = "tcp"
   security_group_id        = "${aws_security_group.sample-node.id}"
   source_security_group_id = "${aws_security_group.sample-cluster.id}"
