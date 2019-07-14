@@ -49,7 +49,7 @@ func gracefulShutdown(srv *http.Server) {
 	<-c
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
-	srv.Shutdown(ctx)
+	srv.Shutdown(ct)
 	log.Println("shutting down")
 	os.Exit(0)
 }
