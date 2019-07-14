@@ -1,0 +1,18 @@
+# worker nodesをクラスターに参加させるConfigMap
+# 以下で生成できる:
+# $ terraform output config_map_aws_auth
+# [参考]
+# https://learn.hashicorp.com/terraform/aws/eks-intro#required-kubernetes-configuration-to-join-worker-nodes
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aws-auth
+  namespace: kube-system
+data:
+  mapRoles: |
+    - rolearn: arn:aws:iam::705180747189:role/terraform-eks-sample-node
+      username: system:node:{{EC2PrivateDNSName}}
+      groups:
+        - system:bootstrappers
+        - system:nodes

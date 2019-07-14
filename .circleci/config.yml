@@ -29,6 +29,10 @@ commands:
           name: setup metrics-server
           command: |
             kubectl apply -f k8s/cluster/metrics-server/
+      - run:
+          name: setup config for aws
+          command: |
+            kubectl apply -f k8s/cluster/aws/
 
 jobs:
   terraform-plan:
