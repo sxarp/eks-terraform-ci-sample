@@ -84,6 +84,23 @@ jobs:
           paths:
             - "/go/pkg/mod"
 
+      - restore_cache:
+          keys:
+            - go-lint-1.17.1
+      - run:
+          name: lint
+          command: |
+            # golangci-lintをインストール
+            # 参考: https://github.com/golangci/golangci-lint#ci-installation
+            [[ ! -f /go/lint/golangci-lint ]] && curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b /go/lint v1.17.1 || true
+
+            cd app # go.modのあるディレクトリに移動しないと変なキャッシュの効き方をしてしまう
+            /go/lint/golangci-lint run ./...
+      - save_cache:
+          key: go-lint-1.17.1
+          paths:
+            - "/go/lint"
+
   app-build: # 参考: https://circleci.com/blog/how-to-build-a-docker-image-on-circleci-2-0/
     working_directory: ~/repo
     docker:
