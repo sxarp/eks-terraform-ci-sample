@@ -36,6 +36,38 @@ resource "aws_iam_role_policy_attachment" "sample-node-AmazonEC2ContainerRegistr
   role       = "${aws_iam_role.sample-node.name}"
 }
 
+# Policy for Cluster Autoscaler
+# https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/README.md#permissions
+
+data "aws_iam_policy_document" "cluster-autoscaler" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "autoscaling:DescribeAutoScalingGroups",
+      "autoscaling:DescribeAutoScalingInstances",
+      "autoscaling:DescribeLaunchConfigurations",
+      "autoscaling:DescribeTags",
+      "autoscaling:SetDesiredCapacity",
+      "autoscaling:TerminateInstanceInAutoScalingGroup"
+    ]
+
+    resources = [
+      "*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "cluster-autoscaler" {
+  name   = "cluster-autoscaler"
+  path   = "/eks-sample/"
+  policy = "${data.aws_iam_policy_document.cluster-autoscaler.json}"
+}
+
+resource "aws_iam_role_policy_attachment" "sample-node-cluster-autoscaler" {
+  policy_arn = "${aws_iam_policy.cluster-autoscaler.arn}"
+  role       = "${aws_iam_role.sample-node.name}"
+}
+
 resource "aws_iam_instance_profile" "sample-node" {
   name = "terraform-eks-sample"
   role = "${aws_iam_role.sample-node.name}"
