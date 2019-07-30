@@ -198,20 +198,6 @@ resource "aws_autoscaling_group" "sample" {
   }
 }
 
-resource "aws_autoscaling_policy" "sample" {
-  name                   = "scale-based-on-cpu-utilization"
-  autoscaling_group_name = "${aws_autoscaling_group.sample.name}"
-  policy_type            = "TargetTrackingScaling"
-
-  target_tracking_configuration {
-    predefined_metric_specification {
-      predefined_metric_type = "ASGAverageCPUUtilization"
-    }
-
-    target_value = 15.0
-  }
-}
-
 /* worker nodesをクラスターに参加させるConfigMap
 以下で取得可能:
 $ terraform output config_map_aws_auth
