@@ -228,6 +228,12 @@ resource "aws_autoscaling_group" "sample" {
     value               = "owned"
     propagate_at_launch = true
   }
+
+  tag {
+    key                 = "k8s.io/cluster-autoscaler/enabled"
+    value               = "true"
+    propagate_at_launch = true
+  }
 }
 
 /* worker nodesをクラスターに参加させるConfigMap
