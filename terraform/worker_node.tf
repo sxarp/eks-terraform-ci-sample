@@ -210,9 +210,13 @@ resource "aws_autoscaling_group" "sample" {
 
   # 0にしておくと、desired_capaciry=0でインスタンスを全部落とせる
   min_size             = 0
-
-  desired_capacity     = 1
   max_size             = 5
+
+  lifecycle {
+    ignore_changes = [
+      desired_capacity, // terraformではなく、CusterAutoscalerが管理する
+    ]
+  }
 
   name                 = "terraform-eks-sample"
   vpc_zone_identifier  = aws_subnet.sample[*].id
