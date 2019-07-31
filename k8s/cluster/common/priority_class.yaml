@@ -1,0 +1,42 @@
+# applicationのpodとそれ以外でpriorityを変える
+# 参考: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
+apiVersion: scheduling.k8s.io/v1beta1
+kind: PriorityClass
+metadata:
+  name: high-priority
+value: 100
+globalDefault: false
+description: "This priority class should be applied for the pods which are not application pods."
+---
+apiVersion: scheduling.k8s.io/v1beta1
+kind: PriorityClass
+metadata:
+  name: application
+value: 0
+globalDefault: false
+description: "This priority class is applied for application pods."
+
+# なお、ビルドインで起動しているpods、coredns/aws-node/kube-proxyには優先度2,000,000,000のsystem-cluster-criticalが割り当てれている
+#
+# $ kubeclt get po -n=kube-system
+# NAME                                  READY   STATUS    RESTARTS   AGE
+# aws-node-ffw8g                        1/1     Running   0          93m
+# aws-node-xrcgn                        1/1     Running   0          98m
+# cluster-autoscaler-6d4c7bffc4-bxwv2   1/1     Running   0          19m
+# coredns-57df9447f5-gzmsv              1/1     Running   0          128m
+# coredns-57df9447f5-h58lg              1/1     Running   0          128m
+# kube-proxy-5n2c7                      1/1     Running   0          93m
+# kube-proxy-7px4k                      1/1     Running   0          98m
+# metrics-server-7896b47b65-4lgnx       1/1     Running   0          17m
+#
+# $ kubectl get priorityclasses.scheduling.k8s.io system-cluster-critical -o=jsonpath={.value}
+# 2000000000%
+#
+# $ kubectl get deployments.apps coredns -n kube-system -o json | jq '.spec.template.spec.priorityClassName'
+# "system-cluster-critical"
+#
+# $ kubectl get daemonset aws-node -n kube-system -o json | jq '.spec.template.spec.priorityClassName'
+# "system-node-critical"
+#
+# kubectl get daemonset kube-proxy -n kube-system -o json | jq '.spec.template.spec.priorityClassName'
+#"system-node-critical"

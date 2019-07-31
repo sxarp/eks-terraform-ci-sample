@@ -36,6 +36,38 @@ resource "aws_iam_role_policy_attachment" "sample-node-AmazonEC2ContainerRegistr
   role       = "${aws_iam_role.sample-node.name}"
 }
 
+# Policy for Cluster Autoscaler
+# https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/README.md#permissions
+
+data "aws_iam_policy_document" "cluster-autoscaler" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "autoscaling:DescribeAutoScalingGroups",
+      "autoscaling:DescribeAutoScalingInstances",
+      "autoscaling:DescribeLaunchConfigurations",
+      "autoscaling:DescribeTags",
+      "autoscaling:SetDesiredCapacity",
+      "autoscaling:TerminateInstanceInAutoScalingGroup"
+    ]
+
+    resources = [
+      "*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "cluster-autoscaler" {
+  name   = "cluster-autoscaler"
+  path   = "/eks-sample/"
+  policy = "${data.aws_iam_policy_document.cluster-autoscaler.json}"
+}
+
+resource "aws_iam_role_policy_attachment" "sample-node-cluster-autoscaler" {
+  policy_arn = "${aws_iam_policy.cluster-autoscaler.arn}"
+  role       = "${aws_iam_role.sample-node.name}"
+}
+
 resource "aws_iam_instance_profile" "sample-node" {
   name = "terraform-eks-sample"
   role = "${aws_iam_role.sample-node.name}"
@@ -178,9 +210,13 @@ resource "aws_autoscaling_group" "sample" {
 
   # 0にしておくと、desired_capaciry=0でインスタンスを全部落とせる
   min_size             = 0
-
-  desired_capacity     = 1
   max_size             = 5
+
+  lifecycle {
+    ignore_changes = [
+      desired_capacity, // terraformではなく、CusterAutoscalerが管理する
+    ]
+  }
 
   name                 = "terraform-eks-sample"
   vpc_zone_identifier  = aws_subnet.sample[*].id
@@ -196,19 +232,11 @@ resource "aws_autoscaling_group" "sample" {
     value               = "owned"
     propagate_at_launch = true
   }
-}
 
-resource "aws_autoscaling_policy" "sample" {
-  name                   = "scale-based-on-cpu-utilization"
-  autoscaling_group_name = "${aws_autoscaling_group.sample.name}"
-  policy_type            = "TargetTrackingScaling"
-
-  target_tracking_configuration {
-    predefined_metric_specification {
-      predefined_metric_type = "ASGAverageCPUUtilization"
-    }
-
-    target_value = 15.0
+  tag {
+    key                 = "k8s.io/cluster-autoscaler/enabled"
+    value               = "true"
+    propagate_at_launch = true
   }
 }
 

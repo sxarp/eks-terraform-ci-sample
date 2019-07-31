@@ -26,13 +26,9 @@ commands:
   setup_cluster:
     steps:
       - run:
-          name: setup metrics-server
+          name: setup cluster
           command: |
-            kubectl apply -f k8s/cluster/metrics-server/
-      - run:
-          name: setup config for aws
-          command: |
-            kubectl apply -f k8s/cluster/aws/
+            kubectl apply -R -f k8s/cluster/
 
 jobs:
   terraform-plan:

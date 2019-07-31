@@ -27,3 +27,5 @@ spec:
             cpu: 150m
           requests:
             cpu: 150m
+      # priorityは他のpod(主にkube-system上にある)と比べて低く設定
+      priorityClassName: application

@@ -76,3 +76,9 @@ alb-delete:
 # 使用例 `curl $(make -s alb-endpoint)/test`
 alb-endpoint:
 	aws elbv2 describe-load-balancers | jq -r '.LoadBalancers | map(select(.LoadBalancerName=="eks-sample"))[0].DNSName'
+
+# 負荷試験(Autoscalerの挙動確認用)
+stress-start:
+	kubectl run stress --image=bash:5.0.7 -n=staging -- bash -c 'for i in $$(seq 1 20); do (while true; do wget -O /dev/null sample/slow; done) & done; sleep 3600'
+stress-stop:
+	kubectl delete deployments.app stress

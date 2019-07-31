@@ -47,3 +47,4 @@ spec:
         volumeMounts:
         - name: tmp-dir
           mountPath: /tmp
+      priorityClassName: high-priority
