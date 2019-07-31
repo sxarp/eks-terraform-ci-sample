@@ -17,6 +17,8 @@ spec:
   # いずれにしても、負荷が急激に減少して、pendingのpodがある状態でworker nodeの供給が止まると
   # hpaは大量のpodをpending状態にさせたままstuckしてしまう模様
   # 関連issue: https://github.com/kubernetes/kubernetes/issues/79158
+  # なお、Cluster Autoscalerを使う場合は上記のような問題は発生しない
+  # というのはpodがスケジュールがスケジュール可能かどうかでスケーリングの判断をするため
   maxReplicas: 20
   metrics:
   - type: Resource
