@@ -145,12 +145,13 @@ spec:
             - --cloud-provider=aws
             - --skip-nodes-with-local-storage=false
             - --expander=least-waste
-            - --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,kubernetes.io/cluster/terraform-eks-sample
+            - --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,kubernetes.io/cluster/terraform-eks-sample # クラスターごとに設定すること
           volumeMounts:
             - name: ssl-certs
               mountPath: /etc/ssl/certs/ca-certificates.crt
               readOnly: true
           imagePullPolicy: "Always"
+      priorityClassName: high-priority
       volumes:
         - name: ssl-certs
           hostPath:
