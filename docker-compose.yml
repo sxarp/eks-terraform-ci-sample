@@ -1,11 +1,12 @@
 version: '3'
 services:
   terraform:
-    build: terraform
+    image: hashicorp/terraform:0.12.3
     working_dir: /terraform
     command: tail -f /dev/null
     volumes:
       - ./terraform:/terraform
+    entrypoint: []
     env_file: .env
   app:
     image: golang:1.12.6
