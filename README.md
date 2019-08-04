@@ -1,20 +1,30 @@
-# eks
-EKS infrastructure
+EKS+Terraform+CircleCI+Goな構成のサンプルアプリ
 
-# terraform
-- `.env`を`.env.sample`を参考にしながらセットアップしてください
+[解説記事](TODO)
 
-`terraform plan`の実行
+# ローカル環境立ち上げ方法
+
+## Terraform
+
+### `.env`をセットアップ
 
 ```sh
-$ make terraform-plan`で`terraform plan
+cp .env.sample .env && cat .env
+AWS_ACCESS_KEY_ID="Ask someone to get the ID."
+AWS_SECRET_ACCESS_KEY="Ask someone to get the key."
 ```
 
-# k8s
+### `terraform plan`の実行
 
-kubectlが打てるように設定します。
+```sh
+$ make terraform-plan
+```
 
-クラスターが存在することを確認
+## kubectl
+
+### AWS-CLIが正しく設定されていることを確認
+
+クラスターが見えていることを確認
 
 ```sh
 $ aws eks list-clusters
@@ -37,13 +47,17 @@ $ aws eks get-token --cluster-name terraform-eks-sample
 $ pip3 install awscli --upgrade --user
 ```
 
-以下を打ってkubectlの設定する([クラスターを作成したprofileが指定されていないと失敗するので注意](https://docs.aws.amazon.com/eks/latest/userguide/troubleshooting.html#unauthorized))
+### kubecltをEKSに向ける
 
 ```sh
-$ aws eks update-kubeconfig --name terraform-eks-sample --profile $USER_CREATED_CLUSTER
+$ make eks-kubeconfig
+aws eks update-kubeconfig --name terraform-eks-sample --profile eks
+Updated context arn:aws:eks:ap-northeast-1:705180747189:cluster/terraform-eks-sample in /Users/hogehoge/.kube/config
 ```
 
-kubectlが正しく設定されていることを確認
+このとき`eks`のprofileでクラスターを作成したユーザーのクレデンシャルが指定されていること([参考](https://docs.aws.amazon.com/eks/latest/userguide/troubleshooting.html#unauthorized))。
+
+### kubectlが正しく設定されていることを確認
 
 ```sh
 $ kubectl get namespaces
@@ -53,15 +67,33 @@ kube-public   Active    36m
 kube-system   Active    36m
 ```
 
-# app
+## app
 
-テストの実行
+### テストの実行
 
 ```sh
 $ make app-test
 ```
 
-サーバーの起動
+### サーバーの起動
 ```sh
 $ make app-server-start
 ```
+
+# ディレクトリ構成
+
+## terraform
+
+Terraformのファイルが置かれている。
+CIでこのディレクトリ全体が`cd terraform && terraform apply`される。
+
+## k8s
+
+- baseディレクトリはKustomizeのbase
+- stagingディレクトリはbaseへのstaging環境の差分
+- clusterはクラスターにkube-system配下にインストールされるマニフェストの置き場
+
+## app
+Golang製のアプリの置き場。
+CI/CDに絡む部分だけで中身はほぼ空。
+
