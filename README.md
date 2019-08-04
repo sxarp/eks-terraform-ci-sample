@@ -145,7 +145,7 @@ deployment.apps/stress created
 Pod
 
 ```sh
-kubectl top po -n staging
+$ kubectl top po -n staging
 NAME                      CPU(cores)   MEMORY(bytes)
 sample-5cc67946db-6c5rn   150m         1Mi
 sample-5cc67946db-bkww5   84m          1Mi
