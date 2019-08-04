@@ -2,27 +2,30 @@ EKS+Terraform+CircleCI+Goな構成のサンプルアプリ
 
 [解説記事](TODO)
 
-# ローカル環境立ち上げ方法
+# 構成図
 
-## Terraform
+![arch](https://user-images.githubusercontent.com/11193139/62423067-79506500-b6f7-11e9-9ef5-fd5ac7a86e44.png)
 
-### `.env`をセットアップ
+
+# Terraformセットアップ
+
+## `.env`をセットアップ
 
 ```sh
-cp .env.sample .env && cat .env
+$ cp .env.sample .env && cat .env
 AWS_ACCESS_KEY_ID="Ask someone to get the ID."
 AWS_SECRET_ACCESS_KEY="Ask someone to get the key."
 ```
 
-### `terraform plan`の実行
+## `terraform plan`の実行
 
 ```sh
 $ make terraform-plan
 ```
 
-## kubectl
+# kubectlセットアップ
 
-### AWS-CLIが正しく設定されていることを確認
+## AWS-CLIが正しく設定されていることを確認
 
 クラスターが見えていることを確認
 
@@ -47,7 +50,7 @@ $ aws eks get-token --cluster-name terraform-eks-sample
 $ pip3 install awscli --upgrade --user
 ```
 
-### kubecltをEKSに向ける
+## kubecltをEKSに向ける
 
 ```sh
 $ make eks-kubeconfig
@@ -57,7 +60,7 @@ Updated context arn:aws:eks:ap-northeast-1:705180747189:cluster/terraform-eks-sa
 
 このとき`eks`のprofileでクラスターを作成したユーザーのクレデンシャルが指定されていること([参考](https://docs.aws.amazon.com/eks/latest/userguide/troubleshooting.html#unauthorized))。
 
-### kubectlが正しく設定されていることを確認
+## kubectlが正しく設定されていることを確認
 
 ```sh
 $ kubectl get namespaces
@@ -67,15 +70,15 @@ kube-public   Active    36m
 kube-system   Active    36m
 ```
 
-## app
+# アプリの開発環境立ち上げ
 
-### テストの実行
+## テストの実行
 
 ```sh
 $ make app-test
 ```
 
-### サーバーの起動
+## サーバーの起動
 ```sh
 $ make app-server-start
 ```
