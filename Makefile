@@ -19,9 +19,13 @@ terraform-init: start
 	$(exec-terraform) init
 
 # terraform planを実行する
-# -lock=falseな理由は、CIのplanとぶつかると邪魔くさいため(どうせCIでplanは確認するので問題ない)
 terraform-plan: terraform-init
-	$(exec-terraform) plan -lock=false
+	$(exec-terraform) plan
+
+# terraform planを実行する
+# stateを更新せずlockも取らないので雑に/頻繁に実行できる
+terraform-check:
+	$(exec-terraform) plan -refresh=false -lock=false
 
 # terraform applyする
 # 開発の都合上用意しているが、ローカルからのapplyは特に本番環境の場合は非推奨なので注意
