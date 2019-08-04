@@ -44,8 +44,13 @@ eks-register-workers: terraform-init eks-kubeconfig
 	$(exec-terraform) output config_map_aws_auth | kubectl apply -f -
 
 # worker nodeを落とす
-eks-delete-workers:
+eks-workers-delete:
 	aws autoscaling set-desired-capacity --auto-scaling-group-name $(cluster-name) --desired-capacity 0
+
+# worker nodeを立ち上げる
+eks-workers-launch:
+	aws autoscaling set-desired-capacity --auto-scaling-group-name $(cluster-name) --desired-capacity 1
+
 
 # EKSを削除する(開発用)
 eks-delete:
