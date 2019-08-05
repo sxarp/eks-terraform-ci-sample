@@ -1,6 +1,6 @@
 EKS+Terraform+CircleCI+Goな構成のサンプルアプリ
 
-[解説記事](TODO)
+[解説記事](https://qiita.com/sxarp/items/e93331169c5b76c75525)
 
 # 構成図
 
