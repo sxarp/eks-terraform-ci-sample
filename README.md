@@ -4,8 +4,7 @@ EKS+Terraform+CircleCI+Goな構成のサンプルアプリ
 
 # 構成図
 
-![arch](https://user-images.githubusercontent.com/11193139/62423067-79506500-b6f7-11e9-9ef5-fd5ac7a86e44.png)
-
+![architecture diagram](https://user-images.githubusercontent.com/11193139/62509169-21c00f80-b845-11e9-87bd-6568c3d32b8c.png)
 
 # Terraformセットアップ
 
