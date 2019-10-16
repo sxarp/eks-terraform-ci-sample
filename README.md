@@ -49,7 +49,7 @@ $ aws eks get-token --cluster-name terraform-eks-sample
 $ pip3 install awscli --upgrade --user
 ```
 
-## kubecltをEKSに向ける
+## kubectlをEKSに向ける
 
 ```sh
 $ make eks-kubeconfig
@@ -87,7 +87,7 @@ $ make app-server-start
 ## Podが起動していること
 
 ```sh
-kubectl get po -n staging --selector app=sample
+$ kubectl get po -n staging --selector app=sample
 NAME                      READY   STATUS    RESTARTS   AGE
 sample-5cc67946db-6c5rn   1/1     Running   0          16m
 sample-5cc67946db-nv9n5   1/1     Running   0          17m
